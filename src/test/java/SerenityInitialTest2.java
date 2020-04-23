@@ -1,22 +1,26 @@
 import Model.Authentication.Content;
 import Model.LoginUser;
+import Questions.GetAuthenticationEmail;
 import Questions.GetAuthenticationToken;
 import Questions.ResponseCode;
 import Task.PostRequest;
+import Task.ValidateEmail;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.ensure.Ensure;
+import net.thucydides.core.annotations.Shared;
 import org.junit.runner.RunWith;
-import Questions.GetAuthenticationEmail;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.core.IsEqual.equalTo;
-
-import Task.ValidateEmail;
 
 
 @RunWith(SerenityRunner.class)
@@ -24,6 +28,9 @@ public class SerenityInitialTest2 {
 
     public static String Url = "https://api-internal-sandbox.lulobank.com/stage";
     public static String Path = "/authentication";
+
+    @Shared
+    GetAuthenticationToken getAuthenticationToken;
 
     @org.junit.Test
     public void encryption() {
@@ -38,11 +45,20 @@ public class SerenityInitialTest2 {
         loginUser.setUsername("tae_mslew@mailinator.com");
 
         //Create Object PostRequest
-        PostRequest postRequest = new PostRequest(Path, loginUser);
+        PostRequest postRequest1 = new PostRequest(Path, loginUser);
+
+        List<Model.LoginUser> list = Arrays.asList(loginUser);
+        String list1 = list.get(0).getUsername();
+
+        List<String> list2 = list.stream()
+                .map(s -> loginUser.getUsername())
+                .collect(java.util.stream.Collectors.toList());
 
         //Actor Attempts to Post Request
+
         johnathan.attemptsTo(
-                postRequest);
+                PostRequest.toAuthenticate());
+
 
         //Validate Code Response
         johnathan.should(
@@ -69,7 +85,7 @@ public class SerenityInitialTest2 {
         johnathan.should(
                 seeThat(new GetAuthenticationEmail(), is("tae_mslew@mailinator.com")));
 
-        //Obtaind Content Email through last Response
+        //obtain Content Email through last Response
         String authenticationResponse = SerenityRest.lastResponse().path("content.email");
 
         //Validate that Email is not Null
@@ -83,14 +99,23 @@ public class SerenityInitialTest2 {
         //Map Content Authentication through GetAuthenticationToken Question
         Content contentAuthentication = new GetAuthenticationToken().answeredBy(johnathan).getContent();
 
+        List<Content> obtainContentInfo = Arrays.asList(contentAuthentication);
+        Content[] mycontent = {contentAuthentication};
+        System.out.println("El contenido de Content" + obtainContentInfo.get(0).getLastName());
+
+        assertThat("Validate Object property IDCLIEN",contentAuthentication,
+                hasProperty("idClient",equalTo("1df8542a-b3ae-4e5b-a79d-97b624f74c23")));
+
+        assertThat(contentAuthentication, hasProperty(
+                "idClient",equalTo("0df8542a-b3ae-4e5b-a79d-97b624f74c23")));
+
         //Obtain Email
         String contentEmail = new GetAuthenticationToken().answeredBy(johnathan).getContent().getEmail();
 
         //Obtain Token
         String Token = new Questions.GetAuthenticationToken().answeredBy(johnathan).getAccessToken();
 
-
-        //Remeber and Recall Functions
+        //remember and Recall Functions
         String cualquiercosa = null;
         johnathan.remember(cualquiercosa, new GetAuthenticationEmail());
 

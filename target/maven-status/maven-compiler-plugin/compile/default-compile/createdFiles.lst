@@ -8,6 +8,7 @@ Model/Authentication/Tokens.class
 Main.class
 Task/PostRequest.class
 Model/Employees.class
+Questions/GetAuthenticationEmail.class
+Task/ValidateEmail.class
 Model/Authentication/Content.class
-Task/ObtainEmail.class
 Model/LoginUser.class
