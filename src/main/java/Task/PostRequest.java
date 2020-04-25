@@ -9,9 +9,6 @@ import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class PostRequest implements Task {
 
-    @Shared
-    PostRequest postRequest;
-
     private String path;
     private Object userInfo;
 
@@ -29,7 +26,7 @@ public class PostRequest implements Task {
                         .body(userInfo))
         );
     }
-    public static PostRequest toAuthenticate(){
-        return instrumented(PostRequest.class);
+    public static PostRequest toAuthenticate(String requestPath, Object requestUserInfo){
+        return instrumented(PostRequest.class, requestPath,requestUserInfo);
     }
 }

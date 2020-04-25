@@ -11,10 +11,10 @@ import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.core.annotations.Shared;
 import org.junit.runner.RunWith;
-
+import Model.Authentication.LoginUserBuilder;
 import java.util.Arrays;
 import java.util.List;
-
+import Model.Authentication.IBuilder;
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,8 +56,15 @@ public class SerenityInitialTest2 {
 
         //Actor Attempts to Post Request
 
+        //Create Builder
+
+        LoginUserBuilder loginUserBuilder = new LoginUserBuilder();
+        LoginUser loginUser1 = loginUserBuilder.withUserName("tae_mslew@mailinator.com")
+                .withPassword("654321")
+                .build();
+
         johnathan.attemptsTo(
-                PostRequest.toAuthenticate());
+                PostRequest.toAuthenticate(Path,loginUser1));
 
 
         //Validate Code Response
@@ -99,12 +106,14 @@ public class SerenityInitialTest2 {
         //Map Content Authentication through GetAuthenticationToken Question
         Content contentAuthentication = new GetAuthenticationToken().answeredBy(johnathan).getContent();
 
+        Content content = getAuthenticationToken.answeredBy(johnathan).getContent();
+
         List<Content> obtainContentInfo = Arrays.asList(contentAuthentication);
         Content[] mycontent = {contentAuthentication};
         System.out.println("El contenido de Content" + obtainContentInfo.get(0).getLastName());
 
         assertThat("Validate Object property IDCLIEN",contentAuthentication,
-                hasProperty("idClient",equalTo("1df8542a-b3ae-4e5b-a79d-97b624f74c23")));
+                hasProperty("idClient",equalTo("0df8542a-b3ae-4e5b-a79d-97b624f74c23")));
 
         assertThat(contentAuthentication, hasProperty(
                 "idClient",equalTo("0df8542a-b3ae-4e5b-a79d-97b624f74c23")));
